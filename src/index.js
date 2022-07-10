@@ -4,28 +4,44 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 
-class Cell extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {value:this.props.value};
-  }
-  render(){
-    return(<button className="cell" onClick={() => this.setState({value:"X"})}>
-      {this.state.value}
+function Cell(props) {
+    return(<button className="cell" onClick={props.onClick}>
+      {props.value}
     </button>)
-  };
 }
-
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {cells:[0, 1, 2, 3, 4, 5, 6, 7, 8]}
+    this.state = {history: [{
+      cells:[0, 1, 2, 3, 4, 5, 6, 7, 8], 
+    }], 
+    xnext:true}
+  }
+  handleClick(i) {
+    const cells = this.state.cells.slice();
+    let gameover = calculateWinner(this.state.cells);
+    if (typeof cells[i] === "number" && !gameover) {
+      cells[i] = this.state.xnext ? 'x' : '0';
+      this.setState({cells:cells, xnext:!this.state.xnext})
+    }
+    else{
+      alert("stop it.")
+    }
+    
   }
   renderCell(i) {
-    return <Cell value = {this.state.cells[i]}/>;
+    return <Cell value = {this.state.cells[i]}
+    onClick={() => this.handleClick(i)}/>;
   }
   render(){
-    const status = "nextplayer x"
+    const winner = calculateWinner(this.state.cells);
+    let status ; 
+    if (winner) {
+      status = "winner " + winner;
+    }
+    else {
+      status = "player " + (this.state.xnext ? 'x' : '0');
+    }
     return(
       <div>
         <div className='status'>{status}</div>
@@ -59,6 +75,21 @@ class Game extends React.Component {
       </div>
     )
   }
+}
+
+function calculateWinner(cells) {
+  const winpos = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+  for (let j = 0; j<winpos.length; j++) {
+    const [a, b, c] = winpos[j]
+    if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+      return cells[a]
+    }
+  }
+  return null;
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
