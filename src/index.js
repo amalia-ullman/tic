@@ -12,9 +12,8 @@ function Cell(props) {
 class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {history: [{
+    this.state = { 
       cells:[0, 1, 2, 3, 4, 5, 6, 7, 8], 
-    }], 
     xnext:true}
   }
   handleClick(i) {
